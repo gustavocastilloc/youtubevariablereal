@@ -1949,6 +1949,145 @@ class Short22(Scene):
         self.play(Create(framebox))
         self.wait(3)
 
+class Short23(Scene):
+    def enungrafica(self):
+        ax=Axes(
+            x_range=[-PI/4,5*PI/4],
+            y_range=[-1,2.5],
+            x_length=PI,
+            y_length=3,
+            tips=False,
+        ).set_color(Amarillo)
+        def func(x):
+            return 1-np.cos(x)
+        func_tex=MathTex(r"f(x)=1-\cos(x)",font_size=18).move_to(ax.c2p(PI/2,2.2))
+        func_graph= ax.plot(func,color=BLUE_D,x_range=[0,PI])
+        recta1 = Line(ax.c2p(0,1-np.cos(0)),ax.c2p(PI,1-np.cos(PI))).set_color(ORANGE)
+        recta2 = Line(ax.c2p(0,0),ax.c2p(PI,0)).set_color(ORANGE)
+        recta3 = Line(ax.c2p(PI,0),ax.c2p(PI,1-np.cos(PI))).set_color(ORANGE)
+        rectax= Line(ax.c2p(PI,-1),ax.c2p(PI,2.5)).set_color(Morado)
+        triangulo=VGroup(recta1,recta2,recta3)
+        area = ax.get_area(
+            func_graph,
+            x_range=(0, PI),
+            color=(GREEN_B, GREEN_D),
+            opacity=0.5,
+        )
+        letras=VGroup(
+            MathTex(r"O",font_size=24).move_to(ax.c2p(-0.2,0.2)),
+            MathTex(r"A",font_size=24).move_to(ax.c2p(PI+0.2,1-np.cos(PI))),
+            MathTex(r"B",font_size=24).move_to(ax.c2p(PI+0.2,0.2)),
+            MathTex(r"0",font_size=24).move_to(ax.c2p(0,-0.2)),
+            MathTex(r"\pi",font_size=24).move_to(ax.c2p(PI,-0.2)),
+            MathTex(r"x=\pi",font_size=24).move_to(ax.c2p(PI,-1.2)),
+        )
+        grafica= VGroup(ax,func_tex,func_graph,area,triangulo,letras,rectax)
+        return grafica
+    def enunciado(self):
+        tam=20
+        enun0 = Tex("Se desea aproximar el area bajo la curva",font_size=tam)
+        enun1= Tex("definida por la funcion $f(x)=1-\cos(x)$",font_size=tam)
+        enun2= VGroup(Tex("en el intervalo",font_size=tam),MathTex(r"[0, \pi]",font_size=tam)).arrange(RIGHT)
+        enun3 = Tex("en el eje $X$ y la recta $x= \pi,$", font_size=tam)
+        enun4 = Tex("considerando la superficie del triangulo", font_size=tam)
+        enun5 = Tex("$OAB$, tal com se muestra en la figura", font_size=tam)
+        enun6 = Tex("Con este procedimiento, el area en $u^2$, es igual a:", font_size=tam)
+        enunciado = VGroup(enun0,enun1,enun2,enun3,enun4,enun5,enun6).arrange(DOWN,center=True)
+        return enunciado
+    def soltext(self):
+        sol= Text("Solucion",font_size=20,font='Akira Expanded').set_color(YELLOW)
+        self.play(FadeIn(sol, shift=DOWN, scale=0.66))
+        self.play(FadeOut(sol, scale=1.5))
+    def desarrollo(self):
+        tam=22
+        desarrollo=VGroup(
+            MathTex(r"Area = \frac{(base) \cdot (altura)}{2}",font_size=20),
+            MathTex(r"Area = \frac{\pi (1-\cos(\pi))}{2}",font_size=tam),
+            MathTex(r"Area = \frac{\pi (1-(-1))}{2}",font_size=tam),
+            MathTex(r"Area = \frac{\pi (2)}{2}",font_size=tam),
+            MathTex(r"Area = \pi",font_size=tam),
+        )
+        return desarrollo.arrange(DOWN,center=True)
+    def construct(self):
+        enungrafica = self.enungrafica()
+        enungraficacopy = enungrafica.copy().scale(0.5).move_to(UP*2)
+        desarrollo=self.desarrollo().next_to(enungraficacopy,DOWN)
+        framebox = SurroundingRectangle(desarrollo[-1][-1],buff = .1)
+        for i, shape in enumerate(enungrafica):
+            self.play(Create(shape))
+            self.wait(1)
+        self.wait(1)
+        self.clear()
+        self.soltext()
+        self.play(Create(enungraficacopy))
+        for i in desarrollo:
+            self.play(Create(i))
+            self.wait(1)
+        self.play(Create(framebox))
+        self.wait(1)
+
+class Short24(Scene):
+    def enungrafica(self):
+        ax=Axes(
+            x_range=[-4,4],
+            y_range=[-5,3],
+            x_length=4,
+            y_length=4,
+            tips=False,
+        ).set_color(Amarillo)
+        def func(x):
+            return (4/5)*x-2
+        numbers_incl = VGroup(
+            MathTex(r"-1",font_size=18).move_to(ax.c2p(0.2,-1)),
+            MathTex(r"-4",font_size=18).move_to(ax.c2p(0.2,-4)),
+        )
+        plano = VGroup(
+            Line(ax.c2p(-4,0),ax.c2p(4,0)),
+            Line(ax.c2p(0,-5),ax.c2p(0,3)),
+        ).set_color(Amarillo)
+        func_tex=MathTex(r"f(x)=\frac{4}{5}x -2",font_size=18).move_to(ax.c2p(PI/2,2.2))
+        func_graph= ax.plot(func,color=BLUE_D,x_range=[-4,4])
+        recta1 = Line(ax.c2p(-2.5,-1),ax.c2p(0,-1)).set_color(ORANGE)
+        recta2 = Line(ax.c2p(0,-1),ax.c2p(0,-2)).set_color(ORANGE)
+        recta3 = Line(ax.c2p(0,-2),ax.c2p(-2.5,-4)).set_color(ORANGE)
+        recta4= Line(ax.c2p(-2.5,-4),ax.c2p(-2.5,-1)).set_color(ORANGE)
+        dashed_1 = DashedLine(ax.c2p(0,-4),ax.c2p(-2.5,-4))
+        trapecio=VGroup(recta1,recta2,recta3,recta4,dashed_1)
+        area = ax.get_area(
+            func_graph,
+            x_range=(-2.5, 0),
+            bounded_graph=ax.plot(lambda x: -1),
+            color=(GREEN_B, GREEN_D),
+            opacity=1,
+        )
+        grafica= VGroup(plano,func_tex,func_graph,area,numbers_incl,trapecio)
+        return grafica
+    def enunciado(self):
+        tam=20
+        enun0 = Tex("La funcion lineal $f$",font_size=tam)
+        enun1= Tex("tiene por regla de correspondencia",font_size=tam)
+        enun2= MathTex(r"f(x)=\frac{4}{5}x -2",font_size=tam)
+        enun3 = Tex("el volumen del solido de revolucion", font_size=tam)
+        enun4 = Tex("que se genera al rotar la region", font_size=tam)
+        enun5 = Tex("sombreada alrededor del eje $Y$", font_size=tam)
+        enun6 = Tex("en $$u^3, es:", font_size=tam)
+        enunciado = VGroup(enun0,enun1,enun2,enun3,enun4,enun5,enun6).arrange(DOWN,center=True)
+        return enunciado
+    def soltext(self):
+        sol= Text("Solucion",font_size=20,font='Akira Expanded').set_color(YELLOW)
+        self.play(FadeIn(sol, shift=DOWN, scale=0.66))
+        self.play(FadeOut(sol, scale=1.5))
+    def construct(self):
+        enungrafica = self.enungrafica().scale(0.8)
+        enungraficacopy = enungrafica.copy().scale(0.5).move_to(UP*2)
+        # desarrollo=self.desarrollo().next_to(enungraficacopy,DOWN)
+        # framebox = SurroundingRectangle(desarrollo[-1][-1],buff = .1)
+        self.play(Create(enungrafica))
+        self.wait(4)
+        self.clear()
+        self.soltext()
+        self.wait(2)
+
 
 
 
