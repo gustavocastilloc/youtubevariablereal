@@ -2027,6 +2027,16 @@ class Short23(Scene):
         self.wait(1)
 
 class Short24(Scene):
+    def imprimirTransform(self,lista):
+        for i in range(len(lista)-1):
+            if i==0:
+                self.play(Create(lista[0]))
+                self.wait(2)
+                self.play(Transform(lista[0],lista[i+1]))
+                self.wait(2)
+            else:
+                self.play(Transform(lista[0],lista[i+1]))
+                self.wait(2)
     def enungrafica(self):
         ax=Axes(
             x_range=[-4,4],
@@ -2045,23 +2055,41 @@ class Short24(Scene):
             Line(ax.c2p(-4,0),ax.c2p(4,0)),
             Line(ax.c2p(0,-5),ax.c2p(0,3)),
         ).set_color(Amarillo)
-        func_tex=MathTex(r"f(x)=\frac{4}{5}x -2",font_size=18).move_to(ax.c2p(PI/2,2.2))
+        func_tex=MathTex(r"f(x)=\frac{4}{5}x -2",font_size=22).next_to(ax,UP)
         func_graph= ax.plot(func,color=BLUE_D,x_range=[-4,4])
+        func_graphrever= ax.plot(lambda x: -(4/5)*x-2,color=BLUE_D,x_range=[-4,4])
         recta1 = Line(ax.c2p(-2.5,-1),ax.c2p(0,-1)).set_color(ORANGE)
         recta2 = Line(ax.c2p(0,-1),ax.c2p(0,-2)).set_color(ORANGE)
         recta3 = Line(ax.c2p(0,-2),ax.c2p(-2.5,-4)).set_color(ORANGE)
         recta4= Line(ax.c2p(-2.5,-4),ax.c2p(-2.5,-1)).set_color(ORANGE)
         dashed_1 = DashedLine(ax.c2p(0,-4),ax.c2p(-2.5,-4))
+        dashed_2 = DashedLine(ax.c2p(0,-4),ax.c2p(2.5,-4))
         trapecio=VGroup(recta1,recta2,recta3,recta4,dashed_1)
-        area = ax.get_area(
+        reversotrap= VGroup(
+            Line(ax.c2p(2.5,-1),ax.c2p(0,-1)).set_color(ORANGE),
+            Line(ax.c2p(0,-1),ax.c2p(0,-2)).set_color(ORANGE),
+            Line(ax.c2p(0,-2),ax.c2p(2.5,-4)).set_color(ORANGE),
+            Line(ax.c2p(2.5,-4),ax.c2p(2.5,-1)).set_color(ORANGE)
+        )
+        areatrap = ax.get_area(
             func_graph,
             x_range=(-2.5, 0),
             bounded_graph=ax.plot(lambda x: -1),
             color=(GREEN_B, GREEN_D),
             opacity=1,
         )
-        grafica= VGroup(plano,func_tex,func_graph,area,numbers_incl,trapecio)
-        return grafica
+        areatrapreverse= ax.get_area(
+            func_graphrever,
+            x_range=(0,2.5),
+            bounded_graph=ax.plot(lambda x: -1),
+            color=(GREEN_B, GREEN_D),
+            opacity=1,
+        )
+        ellipse1= Ellipse(width=2.5,height=0.5).set_color(GREEN_B).move_to(ax.c2p(0,-1))
+        ellipse2= Ellipse(width=2.5,height=0.5).set_color(GREEN_B).move_to(ax.c2p(0,-4))
+        grafica= VGroup(plano,func_tex,func_graph,areatrap,numbers_incl,trapecio)
+        solucion = VGroup(areatrapreverse, reversotrap,ellipse1,ellipse2,dashed_2)
+        return VGroup(grafica,solucion)
     def enunciado(self):
         tam=20
         enun0 = Tex("La funcion lineal $f$",font_size=tam)
@@ -2073,20 +2101,40 @@ class Short24(Scene):
         enun6 = Tex("en $$u^3, es:", font_size=tam)
         enunciado = VGroup(enun0,enun1,enun2,enun3,enun4,enun5,enun6).arrange(DOWN,center=True)
         return enunciado
+    def solucion(self):
+        tam=20
+        desarrollo = VGroup( MathTex(r"V= Cilindro-Cono",font_size=tam)
+        ,MathTex(r"V= \pi r^2 h_{cil} - \frac{1}{3} \pi r^2 h_{cono}",font_size=tam)
+        ,MathTex(r"\frac{4}{5}x-2=-4 \rightarrow x=-\frac{5}{2}",font_size=tam)
+        ,MathTex(r"r= \frac{5}{2}, h_{cil}=3,  h_{cono}=2 ",font_size=tam)
+        ,MathTex(r"V =\pi (\frac{5}{2})^2 3 - \frac{1}{3} \pi (\frac{5}{2})^2 2",font_size=tam)
+        ,MathTex(r"V = \frac{75\pi}{4}-\frac{25\pi}{6}",font_size=tam)
+        ,MathTex(r"V = \frac{175\pi}{12}",font_size=tam)
+        )
+        return desarrollo 
     def soltext(self):
         sol= Text("Solucion",font_size=20,font='Akira Expanded').set_color(YELLOW)
         self.play(FadeIn(sol, shift=DOWN, scale=0.66))
         self.play(FadeOut(sol, scale=1.5))
     def construct(self):
-        enungrafica = self.enungrafica().scale(0.8)
-        enungraficacopy = enungrafica.copy().scale(0.5).move_to(UP*2)
-        # desarrollo=self.desarrollo().next_to(enungraficacopy,DOWN)
-        # framebox = SurroundingRectangle(desarrollo[-1][-1],buff = .1)
-        self.play(Create(enungrafica))
+        grafica= self.enungrafica().scale(0.8)
+        desarrollo=self.solucion().next_to(grafica,DOWN)
+        framebox = SurroundingRectangle(desarrollo[-1],buff = .1)
+        self.play(Create(self.enungrafica()[0].scale(0.8)))
         self.wait(4)
         self.clear()
         self.soltext()
+        self.wait(1)
+        for i in grafica:
+            self.play(Create(i))
+            self.wait(2)
         self.wait(2)
+        self.imprimirTransform(desarrollo)
+        self.play(Create(framebox))
+        self.wait(2)
+
+
+
 
 
 
